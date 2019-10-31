@@ -1,9 +1,44 @@
-from aiohttp import web
 import socketio
+import json
+
+from aiohttp import web
+
 
 sio = socketio.AsyncServer()
 app = web.Application()
 sio.attach(app)
+
+
+class Smartmeat():
+
+    def __init__(self, state=None, temperature=None, sticks = []):
+        self.state = state
+        self.temperature = temperature
+        self.sticks = sticks
+
+    
+    def __str__(self):
+        pass
+
+
+    def has_data(self):
+        return self.state and self.sticks and self.temperature
+
+
+    def format_msg(self):
+        if self.has_data():
+            msg = """smartmeat": {
+                        "on": {self.state},
+                        "temperature": {self.temperature},
+                        "stick1": {self.sticks[0]},
+                        "stick2": {self.sticks[1]},
+                        "stick3": {self.sticks[2]},
+                        "stick4": {self.sticks[3]},
+                    }""".format(self.state, self.temperature, self.sticks[0], self.sticks[1], self.sticks[2], self.sticks[3])
+        print("Formatted message:", msg)
+
+        return msg
+
 
 
 async def index(request):
@@ -21,6 +56,11 @@ def connect(sid, environ):
 def message(sid, data):
     print('I received a message!')
     print(data)
+
+@sio.event
+def send_data(sid, smartmeat_json):
+    print('Sending data!')
+    sio.emit(smartmeat_json)
 
 
 @sio.event
