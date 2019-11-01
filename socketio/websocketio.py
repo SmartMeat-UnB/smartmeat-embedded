@@ -1,6 +1,8 @@
 import socketio
 import json
+import random
 
+from datetime import datetime
 from aiohttp import web
 
 
@@ -8,41 +10,65 @@ sio = socketio.AsyncServer()
 app = web.Application()
 sio.attach(app)
 
+MIN_TEMP = 50
+MAX_TEMP = 400
+
 
 class Smartmeat():
 
-    def __init__(self, state=None, temperature=None, sticks = []):
+    def __init__(self, state=None, temperature=None, sticks=[]):
         self.state = state
         self.temperature = temperature
         self.sticks = sticks
-        # Sticks follow this pattern:
-        # self.sticks = [
-        #                   {
-        #                       "stick1": True,
-        #                       "time_active": "00:00"
-        #                   },
-        #                   {
-        #                       "stick2": True,
-        #                       "time_active": "00:00"
-        #                   },
-        #                   {
-        #                       "stick3": True,
-        #                       "time_active": "00:00"
-        #                   },
-        #                   {
-        #                       "stick4": True,
-        #                       "time_active": "00:00"
-        #                   },
-        #               ]
 
     
     def __str__(self):
         return self.format_msg()
 
 
-    def serialize(self):
-        return json.dumps(self, default=lambda o: o.__dict__, 
-            sort_keys=True, indent=4)
+    def turn_on_smartmeat(self):
+        if self.has_data():
+            self.state = True
+        else:
+            print("WARN: At least one attribute of SmartMeat is None")
+
+
+    def turn_off_smartmeat(self):
+        if self.has_data():
+            self.state = False
+        else:
+            print("WARN: At least one attribute of SmartMeat is None")
+
+
+    def set_temperature(self, value):
+        if self.has_data():
+            if value > MIN_TEMP and value < MAX_TEMP:
+                self.temperature = value
+            else:
+                print("ERROR: Invalid temperature value: {}".format(value))
+        else:
+            print("WARN: At least one attribute of SmartMeat is None")
+
+
+    def set_stick(self, stick_number, state, time_active):
+        curr_time = datetime.now().time()
+        if self.has_data():
+            self.sticks[stick_number] = {
+                "stick{}".format(stick_number): True,
+                "time_active": curr_time
+            }
+        else:
+            print("WARN: At least one attribute of SmartMeat is None")
+
+
+    def remove_stick(self, stick_number):
+        if self.has_data():
+            self.sticks[stick_number] = {
+                "stick{}".format(stick_number): False,
+                "time_active": "00:00"
+            }
+        else:
+            print("WARN: At least one attribute of SmartMeat is None")
 
 
     def has_data(self):
@@ -53,6 +79,11 @@ class Smartmeat():
         if not self.sticks:
             return False
         return True
+
+
+    def serialize(self):
+        return json.dumps(self, default=lambda o: o.__dict__, 
+            sort_keys=True, indent=4)
 
 
     def format_msg(self):
@@ -66,6 +97,37 @@ class Smartmeat():
         print("Formatted message:", formatted_msg)
 
         return json.dumps(formatted_msg)
+
+
+def instantiate_smartmeat():
+    bbq = Smartmeat()
+    bbq.state = True
+    bbq.temperature = random.randint(100, 300)
+    bbq = [
+        {
+            "stick1": True,
+            "time_active": "{}:{}".format(random.randint(0, 60), random.randint(0, 60))
+        },
+        {
+            "stick2": False,
+            "time_active": "00:00"
+        },
+        {
+            "stick3": False,
+            "time_active": "00:00"
+        },
+        {
+            "stick4": True,
+            "time_active": "00:00"
+        },
+    ]
+
+
+def sync_data(obj):
+    """
+    Sync attributes with data collected from sensors
+    """
+    pass 
 
 
 async def index(request):
