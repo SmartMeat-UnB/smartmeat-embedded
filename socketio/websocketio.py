@@ -15,30 +15,57 @@ class Smartmeat():
         self.state = state
         self.temperature = temperature
         self.sticks = sticks
+        # Sticks follow this pattern:
+        # self.sticks = [
+        #                   {
+        #                       "stick1": True,
+        #                       "time_active": "00:00"
+        #                   },
+        #                   {
+        #                       "stick2": True,
+        #                       "time_active": "00:00"
+        #                   },
+        #                   {
+        #                       "stick3": True,
+        #                       "time_active": "00:00"
+        #                   },
+        #                   {
+        #                       "stick4": True,
+        #                       "time_active": "00:00"
+        #                   },
+        #               ]
 
     
     def __str__(self):
-        pass
+        return self.format_msg()
+
+
+    def serialize(self):
+        return json.dumps(self, default=lambda o: o.__dict__, 
+            sort_keys=True, indent=4)
 
 
     def has_data(self):
-        return self.state and self.sticks and self.temperature
+        if not self.state:
+            return False
+        if not self.temperature:
+            return False
+        if not self.sticks:
+            return False
+        return True
 
 
     def format_msg(self):
+        formatted_msg = {}
         if self.has_data():
-            msg = """smartmeat": {
-                        "on": {self.state},
-                        "temperature": {self.temperature},
-                        "stick1": {self.sticks[0]},
-                        "stick2": {self.sticks[1]},
-                        "stick3": {self.sticks[2]},
-                        "stick4": {self.sticks[3]},
-                    }""".format(self.state, self.temperature, self.sticks[0], self.sticks[1], self.sticks[2], self.sticks[3])
-        print("Formatted message:", msg)
+            msg = self.serialize()
+            formatted_msg["smartmeat"] = msg
+        else:
+            print("WARN: At least one attribute of SmartMeat is None")
 
-        return msg
+        print("Formatted message:", formatted_msg)
 
+        return json.dumps(formatted_msg)
 
 
 async def index(request):
