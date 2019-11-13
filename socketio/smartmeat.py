@@ -66,7 +66,24 @@ class Smartmeat():
     def __init__(self, state=False, temperature=-100, sticks=[None]):
         self.state = state
         self.temperature = temperature
-        self.sticks = sticks
+        self.sticks = {
+            "stick1": {
+                "active": False,
+                "time_active": "00:00:00"
+            },
+            "stick2": {
+                "active": False,
+                "time_active": "00:00:00"
+            },
+            "stick3": {
+                "active": False,
+                "time_active": "00:00:00"
+            },
+            "stick4": {
+                "active": False,
+                "time_active": "00:00:00"
+            }
+        }
 
 
     def __str__(self):
@@ -90,11 +107,12 @@ class Smartmeat():
             logger.info("WARN: At least one attribute of SmartMeat is None")
 
 
-    def set_stick(self, stick_number, state, time_active):
-        curr_time = datetime.now().time()
+    def set_stick(self, stick_number):
+        curr_time = '{0:%H:%M:%S}'.format(datetime.now()) 
         if self.has_data():
+            # "stick1" ...
             self.sticks[stick_number] = {
-                "stick{}".format(stick_number): True,
+                "active": True,
                 "time_active": curr_time
             }
         else:
@@ -104,11 +122,20 @@ class Smartmeat():
     def remove_stick(self, stick_number):
         if self.has_data():
             self.sticks[stick_number] = {
-                "stick{}".format(stick_number): False,
+                "active": False,
                 "time_active": "00:00"
             }
         else:
             logger.info("WARN: At least one attribute of SmartMeat is None")
+
+
+    def get_active_sticks(self):
+        states = []
+        for _, v in self.sticks.items(): 
+            states.append(v['active']) 
+
+        # return list with position of all active sticks
+        return [idx+1 for idx, val in enumerate(states) if val == True]
 
 
     def has_data(self):
@@ -122,18 +149,6 @@ class Smartmeat():
 
 
     def serialize(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-            sort_keys=True, indent=4)
-
-
-    def format_msg(self):
-        formatted_msg = {}
-        msg = self.serialize()
-        formatted_msg["smartmeat"] = msg
-
-        if not self.has_data():
-            logger.info("WARN: At least one attribute of SmartMeat is None")
-
-        logger.info("Formatted message: {}".format(formatted_msg))
-
-        return json.dumps(formatted_msg)
+        json_str = {}
+        json_str["smartmeat"] = json.dumps(self.__dict__)  
+        return json_str
