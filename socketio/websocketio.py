@@ -2,13 +2,14 @@ import socketio
 import json
 import random
 import os
+import time
+import logging
+import sys
 
 from datetime import datetime
 from aiohttp import web
 from smartmeat import Smartmeat
 
-import logging
-import sys
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -19,7 +20,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-sio = socketio.AsyncServer(logger=True)
+sio = socketio.AsyncServer(logger=True, async_mode="aiohttp")
 app = web.Application()
 sio.attach(app)
 
@@ -57,10 +58,10 @@ bbq = instantiate_smartmeat()
 
 
 def unserialize(json_str):
-    #global bbq
+    global bbq
 
     if not bbq:
-        instantiate_smartmeat()
+        bbq = instantiate_smartmeat()
 
     # data = json.dumps(json_str)
     data = json_str
@@ -68,6 +69,28 @@ def unserialize(json_str):
     bbq.set_state(data["on"])
     bbq.set_temperature(data["temperature"])
     # bbq.set_stick(data["sticks1"])
+    return bbq
+
+
+def shuffle_data():
+    global bbq
+
+    if not bbq:
+        bbq = instantiate_smartmeat()
+
+    bbq.set_state(True)
+    bbq.set_temperature(random.randint(50, 300))
+
+    active_sticks = bbq.get_active_sticks()
+    inactive_sticks = list(set([1,2,3,4]).symmetric_difference(set(active_sticks)))
+
+    if active_sticks:
+        to_deactivate = random.choice(active_sticks)
+        bbq.remove_stick("stick{}".format(to_deactivate))
+    if inactive_sticks:
+        to_activate = random.choice(inactive_sticks)
+        bbq.set_stick("stick{}".format(to_activate))
+
     return bbq
 
 
@@ -81,23 +104,32 @@ async def index(request):
 def connect(sid, environ):
     global bbq
     if not bbq:
-        instantiate_smartmeat()
+        bbq = instantiate_smartmeat()
     logger.info("Connected {}".format(sid))
 
 
 @sio.event
-def message(sid, data):
+async def message(sid, data):
     global bbq
+    # fill bbq attributes
     bbq = unserialize(data)
-    logger.warn('BBQ message: {}'.format(bbq))
-    
-    sio.emit('my response', {'response': 'my response'})
+    time.sleep(2)
+    # shuffle new data into attributes
+    bbq = shuffle_data()
+    # format object in JSON
+    msg = bbq.serialize()
+    # emit message with new BBQ information
+    await sio.emit("message", msg) 
 
 
-@sio.event
-def send_data(sid, json_str):
+# TODO sending is not working when using this function
+async def send_data(sid):
+    global bbq
     logger.info('Sending data!')
-    sio.emit(json_str)
+    # format object in JSON
+    msg = bbq.serialize()
+    # emit message with new BBQ information
+    await sio.emit("message", msg) 
 
 
 @sio.event
