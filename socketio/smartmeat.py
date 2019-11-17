@@ -63,8 +63,8 @@ class Singleton:
 @Singleton
 class Smartmeat():
 
-    def __init__(self, state=False, temperature=-100, sticks=[None]):
-        self.state = state
+    def __init__(self, on=False, temperature=-100, sticks=[None]):
+        self.on = on 
         self.temperature = temperature
         self.sticks = {
             "stick1": {
@@ -88,11 +88,31 @@ class Smartmeat():
 
     def __str__(self):
         return self.format_msg()
+    def __dict__(self):
+        new_dict = {   "on": self.on,
+                        "temperature": self.temperature,
+                        "stick1": {
+                            "active": self.sticks['stick1']['active'],
+                            "time_active": self.sticks['stick1']['time_active'],
+                        },
+                        "stick2": {
+                            "active": self.sticks['stick2']['active'],
+                            "time_active": self.sticks['stick2']['time_active'],
+                        },
+                        "stick3": {
+                            "active": self.sticks['stick3']['active'],
+                            "time_active": self.sticks['stick3']['time_active'],
+                        },
+                        "stick4": {
+                            "active": self.sticks['stick4']['active'],
+                            "time_active": self.sticks['stick4']['time_active'],
+                        }
+                    }
+        return new_dict 
 
-
-    def set_state(self, state):
+    def set_state(self, on):
         if self.has_data():
-            self.state = state
+            self.on = on 
         else:
             logger.info("WARN: At least one attribute of SmartMeat is None")
 
@@ -150,5 +170,5 @@ class Smartmeat():
 
     def serialize(self):
         json_str = {}
-        json_str["smartmeat"] = json.dumps(self.__dict__)  
+        json_str["smartmeat"] = json.dumps(self.__dict__())  
         return json_str
