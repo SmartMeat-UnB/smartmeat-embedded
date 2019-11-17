@@ -88,27 +88,31 @@ class Smartmeat():
 
     def __str__(self):
         return self.format_msg()
+
+
     def __dict__(self):
-        new_dict = {   "on": self.on,
-                        "temperature": self.temperature,
-                        "stick1": {
-                            "active": self.sticks['stick1']['active'],
-                            "time_active": self.sticks['stick1']['time_active'],
-                        },
-                        "stick2": {
-                            "active": self.sticks['stick2']['active'],
-                            "time_active": self.sticks['stick2']['time_active'],
-                        },
-                        "stick3": {
-                            "active": self.sticks['stick3']['active'],
-                            "time_active": self.sticks['stick3']['time_active'],
-                        },
-                        "stick4": {
-                            "active": self.sticks['stick4']['active'],
-                            "time_active": self.sticks['stick4']['time_active'],
-                        }
-                    }
+        new_dict = {
+                "on": self.on,
+                "temperature": self.temperature,
+                "stick1": {
+                    "active": self.sticks['stick1']['active'],
+                    "time_active": self.sticks['stick1']['time_active'],
+                },
+                "stick2": {
+                    "active": self.sticks['stick2']['active'],
+                    "time_active": self.sticks['stick2']['time_active'],
+                },
+                "stick3": {
+                    "active": self.sticks['stick3']['active'],
+                    "time_active": self.sticks['stick3']['time_active'],
+                },
+                "stick4": {
+                    "active": self.sticks['stick4']['active'],
+                    "time_active": self.sticks['stick4']['time_active'],
+                }
+            }
         return new_dict 
+
 
     def set_state(self, on):
         if self.has_data():
@@ -119,7 +123,7 @@ class Smartmeat():
 
     def set_temperature(self, value):
         if self.has_data():
-            if value > MIN_TEMP and value < MAX_TEMP:
+            if value >= 1 and value <= 4:
                 self.temperature = value
             else:
                 logger.info("ERROR: Invalid temperature value: {}".format(value))
@@ -170,5 +174,5 @@ class Smartmeat():
 
     def serialize(self):
         json_str = {}
-        json_str["smartmeat"] = json.dumps(self.__dict__())  
+        json_str["\"smartmeat\""] = json.dumps(self.__dict__())  
         return json_str

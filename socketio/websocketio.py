@@ -78,7 +78,7 @@ def shuffle_data():
     if not bbq:
         bbq = instantiate_smartmeat()
 
-    bbq.set_state(True)
+    # bbq.set_state(True)
     bbq.set_temperature(random.randint(50, 300))
 
     active_sticks = bbq.get_active_sticks()
