@@ -64,7 +64,7 @@ class Singleton:
 class Smartmeat():
 
     def __init__(self, on=False, temperature=-100, sticks=[None]):
-        self.on = on 
+        self.on = on
         self.temperature = temperature
         self.sticks = {
             "stick1": {
@@ -111,12 +111,12 @@ class Smartmeat():
                     "time_active": self.sticks['stick4']['time_active'],
                 }
             }
-        return new_dict 
+        return new_dict
 
 
     def set_state(self, on):
         if self.has_data():
-            self.on = on 
+            self.on = on
         else:
             logger.info("WARN: At least one attribute of SmartMeat is None")
 
@@ -132,7 +132,7 @@ class Smartmeat():
 
 
     def set_stick(self, stick_number):
-        curr_time = '{0:%H:%M:%S}'.format(datetime.now()) 
+        curr_time = '{0:%H:%M:%S}'.format(datetime.now())
         if self.has_data():
             # "stick1" ...
             self.sticks[stick_number] = {
@@ -155,8 +155,8 @@ class Smartmeat():
 
     def get_active_sticks(self):
         states = []
-        for _, v in self.sticks.items(): 
-            states.append(v['active']) 
+        for _, v in self.sticks.items():
+            states.append(v['active'])
 
         # return list with position of all active sticks
         return [idx+1 for idx, val in enumerate(states) if val == True]
@@ -174,5 +174,5 @@ class Smartmeat():
 
     def serialize(self):
         json_str = {}
-        json_str["\"smartmeat\""] = json.dumps(self.__dict__())  
+        json_str["\"smartmeat\""] = json.dumps(self.__dict__())
         return json_str

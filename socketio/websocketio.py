@@ -30,7 +30,7 @@ def instantiate_smartmeat():
     #global bbq
     bbq = Smartmeat.instance()
     bbq.set_state(True)
-    bbq.set_temperature(random.randint(100, 300))
+    bbq.set_temperature(random.randint(1, 4))
 #    bbq.sticks = [
 #        {
 #            "stick1": True,
@@ -79,7 +79,7 @@ def shuffle_data():
         bbq = instantiate_smartmeat()
 
     # bbq.set_state(True)
-    bbq.set_temperature(random.randint(50, 300))
+    bbq.set_temperature(random.randint(1, 4))
 
     active_sticks = bbq.get_active_sticks()
     inactive_sticks = list(set([1,2,3,4]).symmetric_difference(set(active_sticks)))
