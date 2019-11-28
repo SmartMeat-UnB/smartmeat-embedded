@@ -60,14 +60,18 @@ def shuffle_data():
     bbq.set_temperature(random.randint(1, 4))
 
     active_sticks = bbq.get_active_sticks()
+    print("Active: {}".format(active_sticks))
     inactive_sticks = list(set([1,2,3,4]).symmetric_difference(set(active_sticks)))
+    print("Inactive: {}".format(inactive_sticks))
 
     if active_sticks:
-        to_deactivate = random.choice(active_sticks)
-        bbq.remove_stick("stick{}".format(to_deactivate))
+        for _ in active_sticks:
+            to_deactivate = random.choice(active_sticks)
+            bbq.remove_stick("stick{}".format(to_deactivate))
     if inactive_sticks:
-        to_activate = random.choice(inactive_sticks)
-        bbq.set_stick("stick{}".format(to_activate))
+        for _ in inactive_sticks:
+            to_activate = random.choice(inactive_sticks)
+            bbq.set_stick("stick{}".format(to_activate))
 
     return bbq
 
