@@ -15,7 +15,7 @@ logger.setLevel(logging.DEBUG)
 @Singleton
 class Smartmeat():
 
-    def __init__(self, on=False, temperature=-100, sticks=[None]):
+    def __init__(self, on=False, temperature=-100, sticks=[]):
         self.on = on
         self.temperature = temperature
         self.sticks = {
@@ -39,7 +39,7 @@ class Smartmeat():
 
 
     def __str__(self):
-        return self.format_msg()
+        return self.serialize()
 
 
     def __dict__(self):
@@ -67,42 +67,29 @@ class Smartmeat():
 
 
     def set_state(self, on):
-        if self.has_data():
-            self.on = on
-        else:
-            logger.info("WARN: At least one attribute of SmartMeat is None")
+        self.on = on
 
 
     def set_temperature(self, value):
-        if self.has_data():
-            if value >= 1 and value <= 4:
-                self.temperature = value
-            else:
-                logger.info("ERROR: Invalid temperature value: {}".format(value))
+        if value >= 1 and value <= 4:
+            self.temperature = value
         else:
-            logger.info("WARN: At least one attribute of SmartMeat is None")
+            logger.info("ERROR: Invalid temperature value: {}".format(value))
 
 
     def set_stick(self, stick_number):
         curr_time = '{0:%H:%M:%S}'.format(datetime.now())
-        if self.has_data():
-            # "stick1" ...
-            self.sticks[stick_number] = {
-                "active": True,
-                "time_active": curr_time
-            }
-        else:
-            logger.info("WARN: At least one attribute of SmartMeat is None")
+        self.sticks[stick_number] = {
+            "active": True,
+            "time_active": curr_time
+        }
 
 
     def remove_stick(self, stick_number):
-        if self.has_data():
-            self.sticks[stick_number] = {
-                "active": False,
-                "time_active": "00:00"
-            }
-        else:
-            logger.info("WARN: At least one attribute of SmartMeat is None")
+        self.sticks[stick_number] = {
+            "active": False,
+            "time_active": "00:00"
+        }
 
 
     def get_active_sticks(self):
@@ -112,16 +99,6 @@ class Smartmeat():
 
         # return list with position of all active sticks
         return [idx+1 for idx, val in enumerate(states) if val == True]
-
-
-    def has_data(self):
-        #if not self.state:
-        #    return False
-        #if not self.temperature:
-        #    return False
-        #if not self.sticks:
-        #    return False
-        return True
 
 
     def serialize(self):
