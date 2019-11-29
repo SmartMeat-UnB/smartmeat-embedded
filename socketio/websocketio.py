@@ -12,7 +12,7 @@ from smartmeat import Smartmeat
 
 
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 SIMULATOR = True
 
@@ -21,25 +21,13 @@ app = web.Application()
 sio.attach(app)
 
 
-def instantiate_smartmeat():
-    logger.info("Instantiating object")
-    #global bbq
-    bbq = Smartmeat.instance()
-    bbq.set_state(True)
-    bbq.set_temperature(random.randint(1, 4))
-
-    return bbq
-
-
+global bbq
 logger.info("Smartmeat created!")
-bbq = instantiate_smartmeat()
+bbq = Smartmeat.instance()
 
 
 def unserialize(json_str):
     global bbq
-
-    if not bbq:
-        bbq = instantiate_smartmeat()
 
     # data = json.dumps(json_str)
     data = json_str
@@ -53,16 +41,11 @@ def unserialize(json_str):
 def shuffle_data():
     global bbq
 
-    if not bbq:
-        bbq = instantiate_smartmeat()
-
-    # bbq.set_state(True)
+    bbq.set_state(True)
     bbq.set_temperature(random.randint(1, 4))
 
     active_sticks = bbq.get_active_sticks()
-    print("Active: {}".format(active_sticks))
     inactive_sticks = list(set([1,2,3,4]).symmetric_difference(set(active_sticks)))
-    print("Inactive: {}".format(inactive_sticks))
 
     if active_sticks:
         for _ in active_sticks:
@@ -78,18 +61,10 @@ def shuffle_data():
 
 @sio.on('connect')
 def connect(sid, environ):
-    logger.info("Connected at {}".format(sid))
-
-
-def prepare_message():
     global bbq
     if not bbq:
-        bbq = instantiate_smartmeat()
-
-    # format object in JSON
-    msg = bbq.serialize()
-
-    return msg
+        bbq = Smartmeat.instance()
+    logger.info("Connected at {}".format(sid))
 
 
 @sio.on('message')
@@ -103,7 +78,7 @@ async def get_message(sid, data):
         # if simulator, then send data back after shuffling
         logger.info("Simulator True! Shuffling data!")
         bbq = shuffle_data()
-        msg = prepare_message()
+        msg = bbq.serialize()
         time.sleep(2)
         await send_data(msg)
 
