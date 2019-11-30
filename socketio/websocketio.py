@@ -9,6 +9,7 @@ import sys
 from datetime import datetime
 from aiohttp import web
 from smartmeat import Smartmeat
+from raspberry import RaspGPIO
 
 
 logger = logging.getLogger()
@@ -38,6 +39,15 @@ def unserialize(json_str):
     return bbq
 
 
+def update():
+    global bbq
+    init_sticks = RaspGPIO.state_sticks()
+
+    for i, value in enumerate(init_sticks):
+        if value:
+            bbq.set_stick("stick{}".format(i + 1))
+
+
 def shuffle_data():
     global bbq
 
@@ -45,7 +55,7 @@ def shuffle_data():
     bbq.set_temperature(random.randint(1, 4))
 
     active_sticks = bbq.get_active_sticks()
-    inactive_sticks = list(set([1,2,3,4]).symmetric_difference(set(active_sticks)))
+    inactive_sticks = list(set([1, 2, 3, 4]).symmetric_difference(set(active_sticks)))
 
     if active_sticks:
         for _ in active_sticks:
@@ -59,7 +69,7 @@ def shuffle_data():
     return bbq
 
 
-@sio.on('connect')
+@sio.on("connect")
 def connect(sid, environ):
     global bbq
     if not bbq:
@@ -67,7 +77,7 @@ def connect(sid, environ):
     logger.info("Connected at {}".format(sid))
 
 
-@sio.on('message')
+@sio.on("message")
 async def get_message(sid, data):
     global bbq
     # Fill BBQ attributes
@@ -92,8 +102,8 @@ async def send_data(msg):
 def disconnect(sid):
     global bbq
     bbq = None
-    logger.info('Disconnected {}'.format(sid))
+    logger.info("Disconnected {}".format(sid))
 
 
-if __name__ == '__main__':
-    web.run_app(app, host='0.0.0.0', port=8080)
+if __name__ == "__main__":
+    web.run_app(app, host="0.0.0.0", port=8080)

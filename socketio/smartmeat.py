@@ -18,15 +18,13 @@ class Smartmeat:
     def __init__(self, on=False, temperature=-100, sticks=[]):
         self.on = on
         self.temperature = temperature
-        init_sticks = RaspGPIO.json_sticks()
-        print(init_sticks)
+        init_sticks = RaspGPIO.state_sticks()
         self.sticks = {
             "stick1": {"active": init_sticks[0], "time_active": "00:00:00"},
             "stick2": {"active": init_sticks[1], "time_active": "00:00:00"},
             "stick3": {"active": init_sticks[2], "time_active": "00:00:00"},
             "stick4": {"active": init_sticks[3], "time_active": "00:00:00"},
         }
-    
 
     def __str__(self):
         return self.serialize()
