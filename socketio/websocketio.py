@@ -15,7 +15,7 @@ from raspberry import RaspGPIO
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-SIMULATOR = True
+SIMULATOR = False
 
 sio = socketio.AsyncServer(logger=True, async_mode="aiohttp")
 app = web.Application()
@@ -90,6 +90,10 @@ async def get_message(sid, data):
         bbq = shuffle_data()
         msg = bbq.serialize()
         time.sleep(2)
+        await send_data(msg)
+    else:
+        update()
+        msg = bbq.serialize()
         await send_data(msg)
 
 
