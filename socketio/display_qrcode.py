@@ -6,10 +6,14 @@ import matplotlib.pyplot as plt
 # from pygame.locals import *
 
 
+def format_ipaddr(ipaddr):
+    return "http://{}:8080".format(ipaddr)
+
+
 def get_ipaddr():
-    network_interface = 'wlp3s0'
+    network_interface = ''
     ip = ni.ifaddresses(network_interface)[ni.AF_INET][0]['addr']
-    return ip
+    return format_ipaddr(ip)
 
 
 def get_qrcode_image():
