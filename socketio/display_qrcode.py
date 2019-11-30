@@ -11,7 +11,7 @@ def format_ipaddr(ipaddr):
 
 
 def get_ipaddr():
-    network_interface = ''
+    network_interface = 'enp34s0'
     ip = ni.ifaddresses(network_interface)[ni.AF_INET][0]['addr']
     return format_ipaddr(ip)
 
@@ -34,7 +34,11 @@ def get_qrcode_image():
 
 def plot_image():
     img = get_qrcode_image()
+    plt.figure()
     plt.imshow(img)
+    plt.axis('off')
+    plt.axis("tight")  # gets rid of white border
+    plt.axis("image")  # square up the image instead of filling the "figure" space
     plt.show()
 
 
