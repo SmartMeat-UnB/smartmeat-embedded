@@ -41,7 +41,7 @@ def unserialize(json_str):
 def shuffle_data():
     global bbq
 
-    bbq.set_state(True)
+    # bbq.set_state(True)
     bbq.set_temperature(random.randint(1, 4))
 
     active_sticks = bbq.get_active_sticks()
