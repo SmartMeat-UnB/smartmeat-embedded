@@ -41,10 +41,10 @@ class RaspGPIO:
         GPIO.setup(motor2, GPIO.OUT)
         GPIO.setup(motor3, GPIO.OUT)
         GPIO.setup(motor4, GPIO.OUT)
-        GPIO.output(motor1, False )
-        GPIO.output(motor2, False )
-        GPIO.output(motor3, False )
-        GPIO.output(motor4, False )
+        #GPIO.output(motor1, False )
+        #GPIO.output(motor2, False )
+        #GPIO.output(motor3, False )
+        #GPIO.output(motor4, False )
 
         # Iniciando os motores com dutyCycle igual a 0
         # Ou seja desligados
