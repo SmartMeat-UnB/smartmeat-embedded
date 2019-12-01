@@ -5,86 +5,7 @@ import os
 
 
 class RaspGPIO:
-
-    # Constantes para o PWM
-    dc1 = 0
-    dc2 = 0
-    dc3 = 0
-    dc4 = 0
-    # Constantes para o Sensor
-    SENSOR_VALUE1 = 0
-    SENSOR_VALUE2 = 0
-
-    def thermal_couple_read(CLK, DBIT, CS):
-        value = 0
-        # iniciar sensor
-        GPIO.output(CS, False)
-        time.sleep(0.002)
-        GPIO.output(CS, True)
-        time.sleep(0.2)
-
-        # Ler o chip e retornar a temperatura
-        GPIO.output(CS, False)
-        GPIO.output(CLK, True)
-        GPIO.output(CLK, False)
-
-        i = 14
-        while i >= 0:
-            GPIO.output(CLK, True)
-            ##            print("\nvalor1",value)
-            value += GPIO.input(DBIT) << i
-            ##            print("\nValor 2", value)
-            GPIO.output(CLK, False)
-            i = i - 1
-
-        # if((value & 0x04)==0x04):
-        # return -1
-
-        return value >> 3
-
-    # Definindo funcao para deteccao dos slots e ativacao dos motores
-    def mainTermo(self):
-
-        CLK1 = 33
-        DBIT1 = 35  # S0
-        CS1 = 37
-
-        CLK2 = 36
-        DBIT2 = 38  # S0
-        CS2 = 40
-
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setwarnings(False)
-        GPIO.setup(CLK1, GPIO.OUT)
-        GPIO.setup(DBIT1, GPIO.IN)
-        GPIO.setup(CS1, GPIO.OUT)
-        GPIO.setup(CLK2, GPIO.OUT)
-        GPIO.setup(DBIT2, GPIO.IN)
-        GPIO.setup(CS2, GPIO.OUT)
-
-        x = 1
-        i = 0
-
-        GPIO.output(CS1, True)
-        GPIO.output(CLK1, False)
-        GPIO.output(CS2, True)
-        GPIO.output(CLK2, False)
-
-        SENSOR_VALUE1 = self.thermal_couple_read(CLK1, DBIT1, CS1)
-        # print("\nS1: ", SENSOR_VALUE1)
-        SENSOR_VALUE2 = self.thermal_couple_read(CLK2, DBIT2, CS2)
-        # print("\nS2: ", SENSOR_VALUE2)
-
-        Ctemp1 = SENSOR_VALUE1 * 0.25
-        Ctemp2 = SENSOR_VALUE2 * 0.25
-        print("===================")
-        print("\nTemperatura 1 = ", Ctemp1)
-        print("\nTemperatura 2 = ", Ctemp2)
-        CtempMedia = (Ctemp1 + Ctemp2) / 2
-        print("\nTemperatura Media = ", CtempMedia)
-        # Inicializa os stickers
-
-    def state_sticks(self):
+    def state_sticks():
         # while True:
         ##        os.system('clear') or None
         # Nao esquecer de alterar para os pinos da rasp
@@ -171,7 +92,6 @@ class RaspGPIO:
             sticker4 = False
             pwmMot4.ChangeDutyCycle(100)
 
-        self.mainTermo()
         print("\nSticker 1 = ", sticker1)
         print("\nSticker 2 = ", sticker2)
         print("\nSticker 3 = ", sticker3)
