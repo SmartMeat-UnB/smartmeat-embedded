@@ -3,3 +3,5 @@ python-socketio
 qrcode
 pygame
 netifaces
+pytz 
+

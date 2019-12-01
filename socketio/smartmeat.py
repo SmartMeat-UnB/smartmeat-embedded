@@ -6,6 +6,7 @@ import sys
 
 from singleton import Singleton
 from datetime import datetime
+from pytz import timezone
 
 
 logger = logging.getLogger()
@@ -78,7 +79,9 @@ class Smartmeat():
 
 
     def set_stick(self, stick_number):
-        curr_time = '{0:%H:%M:%S}'.format(datetime.now())
+        tz = timezone('Brazil/East')
+        now = datetime.now(tz=tz)
+        curr_time = '{0:%H:%M:%S}'.format(now)
         self.sticks[stick_number] = {
             "active": True,
             "time_active": curr_time

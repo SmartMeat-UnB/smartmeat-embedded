@@ -6,6 +6,7 @@ import time
 import logging
 import sys
 
+from pytz import timezone
 from datetime import datetime
 from aiohttp import web
 from smartmeat import Smartmeat
@@ -84,7 +85,8 @@ async def get_message(sid, data):
 
 
 async def send_data(msg):
-    logger.info("Sending Message. Message time: {}".format(datetime.now()))
+    tz = timezone('Brazil/East')
+    logger.info("Sending Message. Message time: {}".format(datetime.now(tz=tz)))
     await sio.emit("message", msg)
 
 
