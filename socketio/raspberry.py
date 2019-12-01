@@ -82,8 +82,21 @@ class RaspGPIO:
         print("\nTemperatura 2 = ", Ctemp2)
         CtempMedia = (Ctemp1 + Ctemp2) / 2
         print("\nTemperatura Media = ", CtempMedia)
-
         # Inicializa os stickers
+
+    def state_sticks():
+        # while True:
+        ##        os.system('clear') or None
+        # Nao esquecer de alterar para os pinos da rasp
+        slot1 = 12
+        slot2 = 7
+        slot3 = 13
+        slot4 = 11
+        # Definindo constantes dos motores
+        motor1 = 29
+        motor2 = 15
+        motor3 = 22
+        motor4 = 31
         sticker1 = False
         sticker2 = False
         sticker3 = False
