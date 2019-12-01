@@ -44,8 +44,8 @@ def update():
     init_sticks = RaspGPIO.state_sticks()
 
     for i, value in enumerate(init_sticks):
-        if value:
-            bbq.set_stick("stick{}".format(i + 1))
+    #    if value:
+        bbq.set_stick("stick{}".format(i + 1))
 
 
 def shuffle_data():
