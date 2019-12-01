@@ -5,12 +5,24 @@ import os
 import time
 import logging
 import sys
+import RPi.GPIO as gpio
 
 from datetime import datetime
 from aiohttp import web
 from smartmeat import Smartmeat
 from raspberry import RaspGPIO
 
+#gpio.setmode(gpio.BOARD)
+#
+#gpio.setup(29, gpio.OUT)
+#gpio.setup(15, gpio.OUT)
+#gpio.setup(22, gpio.OUT)
+#gpio.setup(31, gpio.OUT)
+#
+#gpio.output(29, F)
+#gpio.output(15, False)
+#gpio.output(22, False)
+#gpio.output(31, False)
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
