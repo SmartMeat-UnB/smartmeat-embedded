@@ -7,6 +7,7 @@ import logging
 import sys
 import RPi.GPIO as gpio
 
+from pytz import timezone
 from datetime import datetime
 from aiohttp import web
 from smartmeat import Smartmeat
@@ -63,7 +64,7 @@ def update():
 def shuffle_data():
     global bbq
 
-    bbq.set_state(True)
+    # bbq.set_state(True)
     bbq.set_temperature(random.randint(1, 4))
 
     active_sticks = bbq.get_active_sticks()
@@ -110,7 +111,8 @@ async def get_message(sid, data):
 
 
 async def send_data(msg):
-    logger.info("Sending Message. Message time: {}".format(datetime.now()))
+    tz = timezone('Brazil/East')
+    logger.info("Sending Message. Message time: {}".format(datetime.now(tz=tz)))
     await sio.emit("message", msg)
 
 

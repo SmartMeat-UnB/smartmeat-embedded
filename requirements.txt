@@ -4,3 +4,4 @@ qrcode
 pygame
 netifaces
 RPi.GPIO
+pytz 

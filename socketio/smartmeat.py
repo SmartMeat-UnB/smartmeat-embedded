@@ -8,6 +8,7 @@ import re
 from singleton import Singleton
 from datetime import datetime
 from raspberry import RaspGPIO
+from pytz import timezone
 
 
 logger = logging.getLogger()
@@ -63,7 +64,9 @@ class Smartmeat:
             logger.info("ERROR: Invalid temperature value: {}".format(value))
 
     def set_stick(self, stick_number):
-        curr_time = "{0:%H:%M:%S}".format(datetime.now())
+        tz = timezone('Brazil/East')
+        now = datetime.now(tz=tz)
+        curr_time = '{0:%H:%M:%S}'.format(now)
         init_sticks = RaspGPIO.state_sticks()
         number_stick = int(re.sub(r'[a-z]+', '', stick_number, re.I))
         print(init_sticks[number_stick-1])
