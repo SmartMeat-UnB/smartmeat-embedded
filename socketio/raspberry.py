@@ -97,6 +97,7 @@ class RaspGPIO:
         motor2 = 15
         motor3 = 22
         motor4 = 31
+
         sticker1 = False
         sticker2 = False
         sticker3 = False
@@ -123,20 +124,6 @@ class RaspGPIO:
         GPIO.output(motor2, True)
         GPIO.output(motor3, True)
         GPIO.output(motor4, True)
-
-    def state_sticks():
-        # while True:
-        ##        os.system('clear') or None
-        # Nao esquecer de alterar para os pinos da rasp
-        slot1 = 12
-        slot2 = 7
-        slot3 = 13
-        slot4 = 11
-        # Definindo constantes dos motores
-        motor1 = 29
-        motor2 = 15
-        motor3 = 22
-        motor4 = 31
 
         # Iniciando os motores com dutyCycle igual a 0
         # Ou seja desligados
