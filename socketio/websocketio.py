@@ -89,7 +89,7 @@ async def get_message(sid, data):
         logger.info("Simulator True! Shuffling data!")
         bbq = shuffle_data()
         msg = bbq.serialize()
-        time.sleep(2)
+        # time.sleep(2)
         await send_data(msg)
     else:
         update()
