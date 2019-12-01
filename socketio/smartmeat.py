@@ -63,7 +63,8 @@ class Smartmeat:
 
     def set_stick(self, stick_number):
         curr_time = "{0:%H:%M:%S}".format(datetime.now())
-        self.sticks[stick_number] = {"active": True, "time_active": curr_time}
+        init_sticks = RaspGPIO.state_sticks()
+        self.sticks[stick_number] = {"active": init_sticks, "time_active": curr_time}
 
     def remove_stick(self, stick_number):
         self.sticks[stick_number] = {"active": False, "time_active": "00:00"}
