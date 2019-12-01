@@ -5,11 +5,7 @@ import os
 
 
 class RaspGPIO:
-    # Definindo constantes dos motores
-    motor1 = 29
-    motor2 = 15
-    motor3 = 22
-    motor4 = 31
+
     # Constantes para o PWM
     dc1 = 0
     dc2 = 0
@@ -115,10 +111,24 @@ class RaspGPIO:
         GPIO.output(motor3, True)
         GPIO.output(motor4, True)
 
+    def state_sticks():
+        # while True:
+        ##        os.system('clear') or None
+        # Nao esquecer de alterar para os pinos da rasp
+        slot1 = 12
+        slot2 = 7
+        slot3 = 13
+        slot4 = 11
+        # Definindo constantes dos motores
+        motor1 = 29
+        motor2 = 15
+        motor3 = 22
+        motor4 = 31
+
         # Iniciando os motores com dutyCycle igual a 0
         # Ou seja desligados
         pwmMot1 = GPIO.PWM(motor1, 100)
-        pwmMot1.start(0)
+        pwmMot1.start(100)
 
         pwmMot2 = GPIO.PWM(motor2, 100)
         pwmMot2.start(100)
@@ -129,9 +139,6 @@ class RaspGPIO:
         pwmMot4 = GPIO.PWM(motor4, 100)
         pwmMot4.start(100)
 
-    def state_sticks():
-        # while True:
-        ##        os.system('clear') or None
         if GPIO.input(slot1) == True:
             sticker1 = True
             pwmMot1.ChangeDutyCycle(65)
