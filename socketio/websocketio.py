@@ -15,7 +15,8 @@ from smartmeat import Smartmeat
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-SIMULATOR = True
+SIMULATOR = False
+SLEEP_TIME = 2
 
 sio = socketio.AsyncServer(logger=True, async_mode="aiohttp")
 app = web.Application()
@@ -41,6 +42,8 @@ def unserialize(json_str):
 
 def shuffle_data():
     global bbq
+    if not bbq:
+        bbq = Smartmeat.instance()
 
     # bbq.set_state(True)
     bbq.set_temperature(random.randint(1, 4))
@@ -84,12 +87,21 @@ async def get_message(sid, data):
         await send_data()
 
 
-async def send_data():
+async def send_data(threaded=False):
     global bbq
+    if not bbq:
+        bbq = Smartmeat.instance()
     tz = timezone('Brazil/East')
     logger.info("Sending Message. Message time: {}".format(datetime.now(tz=tz)))
     msg = bbq.serialize()
-    await sio.emit("message", msg)
+    if threaded:
+        while True:
+            await sio.sleep(SLEEP_TIME)
+            bbq = shuffle_data()
+            msg = bbq.serialize()
+            await sio.emit("message", msg)
+    else:
+        await sio.emit("message", msg)
 
 
 @sio.event
@@ -100,4 +112,5 @@ def disconnect(sid):
 
 
 if __name__ == '__main__':
+    sio.start_background_task(send_data, threaded=True)
     web.run_app(app, host='0.0.0.0', port=8080)
