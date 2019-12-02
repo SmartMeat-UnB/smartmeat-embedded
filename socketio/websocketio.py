@@ -61,11 +61,12 @@ def shuffle_data():
 
 
 @sio.on('connect')
-def connect(sid, environ):
+async def connect(sid, environ):
     global bbq
     if not bbq:
         bbq = Smartmeat.instance()
     logger.info("Connected at {}".format(sid))
+    await send_data()
 
 
 @sio.on('message')
@@ -79,14 +80,15 @@ async def get_message(sid, data):
         # if simulator, then send data back after shuffling
         logger.info("Simulator True! Shuffling data!")
         bbq = shuffle_data()
-        msg = bbq.serialize()
-        time.sleep(2)
-        await send_data(msg)
+        #time.sleep(2)
+        await send_data()
 
 
-async def send_data(msg):
+async def send_data():
+    global bbq
     tz = timezone('Brazil/East')
     logger.info("Sending Message. Message time: {}".format(datetime.now(tz=tz)))
+    msg = bbq.serialize()
     await sio.emit("message", msg)
 
 
