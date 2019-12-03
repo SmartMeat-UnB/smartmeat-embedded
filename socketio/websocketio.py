@@ -29,6 +29,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 SIMULATOR = False
+SLEEP_TIME = 2
 
 sio = socketio.AsyncServer(logger=True, async_mode="aiohttp")
 app = web.Application()
@@ -55,16 +56,20 @@ def unserialize(json_str):
 def update():
     global bbq
     init_sticks = RaspGPIO.state_sticks()
-
-    for i, value in enumerate(init_sticks):
-    #    if value:
-        bbq.set_stick("stick{}".format(i + 1))
+    bbq.set_stick("stick1")
+    bbq.set_stick("stick2")
+    bbq.set_stick("stick3")
+    bbq.set_stick("stick4")
+    #for i, value in enumerate(init_sticks):
+    #    bbq.set_stick("stick{}".format(i + 1))
 
 
 def shuffle_data():
     global bbq
+    if not bbq:
+        bbq = Smartmeat.instance()
 
-    # bbq.set_state(True)
+    bbq.set_state(True)
     bbq.set_temperature(random.randint(1, 4))
 
     active_sticks = bbq.get_active_sticks()
@@ -82,12 +87,13 @@ def shuffle_data():
     return bbq
 
 
-@sio.on("connect")
-def connect(sid, environ):
+@sio.on('connect')
+async def connect(sid, environ):
     global bbq
     if not bbq:
         bbq = Smartmeat.instance()
     logger.info("Connected at {}".format(sid))
+    await send_data()
 
 
 @sio.on("message")
@@ -105,15 +111,30 @@ async def get_message(sid, data):
         # time.sleep(2)
         await send_data(msg)
     else:
-        update()
+        # if bbq, update sticks
+        logger.info("False! data!")
+        bbq = update()
         msg = bbq.serialize()
+        print(msg)
         await send_data(msg)
+        #time.sleep(2)
 
 
-async def send_data(msg):
+async def send_data(threaded=False):
+    global bbq
+    if not bbq:
+        bbq = Smartmeat.instance()
     tz = timezone('Brazil/East')
     logger.info("Sending Message. Message time: {}".format(datetime.now(tz=tz)))
-    await sio.emit("message", msg)
+    msg = bbq.serialize()
+    if threaded:
+        while True:
+            await sio.sleep(SLEEP_TIME)
+            bbq = shuffle_data()
+            msg = bbq.serialize()
+            await sio.emit("message", msg)
+    else:
+        await sio.emit("message", msg)
 
 
 @sio.event
@@ -123,5 +144,6 @@ def disconnect(sid):
     logger.info("Disconnected {}".format(sid))
 
 
-if __name__ == "__main__":
-    web.run_app(app, host="0.0.0.0", port=8080)
+if __name__ == '__main__':
+    sio.start_background_task(send_data, threaded=True)
+    web.run_app(app, host='0.0.0.0', port=8080)
