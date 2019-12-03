@@ -9,10 +9,10 @@ class RaspGPIO:
         # while True:
         ##        os.system('clear') or None
         # Nao esquecer de alterar para os pinos da rasp
-        slot1 = 12
-        slot2 = 7
-        slot3 = 13
-        slot4 = 11
+        slot1 = 11
+        slot2 = 13
+        slot3 = 12
+        slot4 = 7
         # Definindo constantes dos motores
         motor1 = 29
         motor2 = 15

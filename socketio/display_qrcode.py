@@ -11,7 +11,7 @@ def format_ipaddr(ipaddr):
 
 
 def get_ipaddr():
-    network_interface = 'enp34s0'
+    network_interface = 'wlan0'
     ip = ni.ifaddresses(network_interface)[ni.AF_INET][0]['addr']
     return format_ipaddr(ip)
 
