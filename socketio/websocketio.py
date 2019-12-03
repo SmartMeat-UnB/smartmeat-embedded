@@ -13,23 +13,11 @@ from aiohttp import web
 from smartmeat import Smartmeat
 from raspberry import RaspGPIO
 
-#gpio.setmode(gpio.BOARD)
-#
-#gpio.setup(29, gpio.OUT)
-#gpio.setup(15, gpio.OUT)
-#gpio.setup(22, gpio.OUT)
-#gpio.setup(31, gpio.OUT)
-#
-#gpio.output(29, F)
-#gpio.output(15, False)
-#gpio.output(22, False)
-#gpio.output(31, False)
-
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 SIMULATOR = False
-SLEEP_TIME = 2
+SLEEP_TIME = 1
 
 sio = socketio.AsyncServer(logger=True, async_mode="aiohttp")
 app = web.Application()
@@ -55,13 +43,11 @@ def unserialize(json_str):
 
 def update():
     global bbq
-    init_sticks = RaspGPIO.state_sticks()
+    #jinit_sticks = RaspGPIO.state_sticks()
     bbq.set_stick("stick1")
     bbq.set_stick("stick2")
     bbq.set_stick("stick3")
     bbq.set_stick("stick4")
-    #for i, value in enumerate(init_sticks):
-    #    bbq.set_stick("stick{}".format(i + 1))
 
 
 def shuffle_data():

@@ -6,8 +6,6 @@ import os
 
 class RaspGPIO:
     def state_sticks():
-        # while True:
-        ##        os.system('clear') or None
         # Nao esquecer de alterar para os pinos da rasp
         slot1 = 11
         slot2 = 13
@@ -41,10 +39,6 @@ class RaspGPIO:
         GPIO.setup(motor2, GPIO.OUT)
         GPIO.setup(motor3, GPIO.OUT)
         GPIO.setup(motor4, GPIO.OUT)
-        #GPIO.output(motor1, False )
-        #GPIO.output(motor2, False )
-        #GPIO.output(motor3, False )
-        #GPIO.output(motor4, False )
 
         # Iniciando os motores com dutyCycle igual a 0
         # Ou seja desligados
@@ -64,7 +58,7 @@ class RaspGPIO:
             sticker1 = True
             #pwmMot1.ChangeDutyCycle(35)
             pwmMot1.start(30)
-            time.sleep(4)
+            #time.sleep(4)
         elif GPIO.input(slot1) == False:
             sticker1 = False
             pwmMot1.ChangeDutyCycle(0)
@@ -73,8 +67,7 @@ class RaspGPIO:
             sticker2 = True
             #pwmMot2.ChangeDutyCycle(60)
             pwmMot2.start(60)
-            time.sleep(4)
-
+            #time.sleep(4)
         elif GPIO.input(slot2) == False:
             sticker2 = False
             pwmMot2.ChangeDutyCycle(0)
@@ -83,8 +76,7 @@ class RaspGPIO:
             sticker3 = True
             #pwmMot3.ChangeDutyCycle(50)
             pwmMot3.start(50)
-            time.sleep(4)
-
+            #time.sleep(4)
         elif GPIO.input(slot3) == False:
             sticker3 = False
             pwmMot3.ChangeDutyCycle(0)
@@ -93,8 +85,7 @@ class RaspGPIO:
             sticker4 = True
             #pwmMot4.ChangeDutyCycle(35)
             pwmMot4.start(55)
-            time.sleep(4)
-
+            #time.sleep(4)
         elif GPIO.input(slot4) == False:
             sticker4 = False
             pwmMot4.ChangeDutyCycle(0)
@@ -104,6 +95,6 @@ class RaspGPIO:
         print("\nSticker 3 = ", sticker3)
         print("\nSticker 4 = ", sticker4)
         print("===================")
-        time.sleep(0.5)
+        #time.sleep(0.5)
         sticks = [sticker1, sticker2, sticker3, sticker4]
         return sticks
