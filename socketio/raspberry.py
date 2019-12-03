@@ -14,10 +14,10 @@ class RaspGPIO:
         slot3 = 12
         slot4 = 7
         # Definindo constantes dos motores
-        motor1 = 29
-        motor2 = 15
-        motor3 = 22
-        motor4 = 31
+        motor1 = 31
+        motor2 = 22
+        motor3 = 29
+        motor4 = 15
 
         sticker1 = False
         sticker2 = False
@@ -49,48 +49,55 @@ class RaspGPIO:
         # Iniciando os motores com dutyCycle igual a 0
         # Ou seja desligados
         pwmMot1 = GPIO.PWM(motor1, 100)
-        pwmMot1.start(100)
+        #pwmMot1.start(0)
 
         pwmMot2 = GPIO.PWM(motor2, 100)
-        pwmMot2.start(100)
+        #pwmMot2.start(0)
 
         pwmMot3 = GPIO.PWM(motor3, 100)
-        pwmMot3.start(100)
+        #pwmMot3.start(0)
 
         pwmMot4 = GPIO.PWM(motor4, 100)
-        pwmMot4.start(100)
+        #pwmMot4.start(0)
 
         if GPIO.input(slot1) == True:
             sticker1 = True
-            pwmMot1.ChangeDutyCycle(65)
-
+            #pwmMot1.ChangeDutyCycle(35)
+            pwmMot1.start(30)
+            time.sleep(4)
         elif GPIO.input(slot1) == False:
             sticker1 = False
-            pwmMot1.ChangeDutyCycle(100)
+            pwmMot1.ChangeDutyCycle(0)
 
         if GPIO.input(slot2) == True:
             sticker2 = True
-            pwmMot2.ChangeDutyCycle(55)
+            #pwmMot2.ChangeDutyCycle(60)
+            pwmMot2.start(60)
+            time.sleep(4)
 
         elif GPIO.input(slot2) == False:
             sticker2 = False
-            pwmMot2.ChangeDutyCycle(100)
+            pwmMot2.ChangeDutyCycle(0)
 
         if GPIO.input(slot3) == True:
             sticker3 = True
-            pwmMot3.ChangeDutyCycle(65)
+            #pwmMot3.ChangeDutyCycle(50)
+            pwmMot3.start(50)
+            time.sleep(4)
 
         elif GPIO.input(slot3) == False:
             sticker3 = False
-            pwmMot3.ChangeDutyCycle(100)
+            pwmMot3.ChangeDutyCycle(0)
 
         if GPIO.input(slot4) == True:
             sticker4 = True
-            pwmMot4.ChangeDutyCycle(65)
+            #pwmMot4.ChangeDutyCycle(35)
+            pwmMot4.start(55)
+            time.sleep(4)
 
         elif GPIO.input(slot4) == False:
             sticker4 = False
-            pwmMot4.ChangeDutyCycle(100)
+            pwmMot4.ChangeDutyCycle(0)
 
         print("\nSticker 1 = ", sticker1)
         print("\nSticker 2 = ", sticker2)
