@@ -99,6 +99,13 @@ class RaspGPIO:
         sticks = [sticker1, sticker2, sticker3, sticker4]
         return sticks
 
+    def acende():
+        microseconds = 0.00001 * float(tempo)
+        time.sleep(microseconds)
+        GPIO.output(saida, True)
+        time.sleep(0.001)
+        GPIO.output(saida, False)
+
     def state_temperature(temperature):
         GPIO.setmode(GPIO.BOARD)
         GPIO.setwarnings(False)
@@ -110,13 +117,7 @@ class RaspGPIO:
         GPIO.output(saida, False)
         GPIO.setup(entrada, GPIO.IN)
 
-        microseconds = 0.00001 * float(tempo)
-        time.sleep(microseconds)
-        GPIO.output(saida, True)
-        time.sleep(0.001)
-        GPIO.output(saida, False)
-
-        GPIO.add_event_detect(entrada, GPIO.RISING, callback=state_temperature)
+        GPIO.add_event_detect(entrada, GPIO.RISING, callback=acende)
 
         # while True:
         valor = temperature
