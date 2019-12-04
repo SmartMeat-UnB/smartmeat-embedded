@@ -57,6 +57,11 @@ def update_bbq():
     RaspGPIO.state_temperature(bbq.set_temperature)
 
 
+def set_temp_rasp():
+    global bbq
+    return bbq.set_temperature
+
+
 def shuffle_data():
     global bbq
     if not bbq:
