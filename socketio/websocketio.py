@@ -48,7 +48,13 @@ def update():
     bbq.set_stick("stick2")
     bbq.set_stick("stick3")
     bbq.set_stick("stick4")
-    bbq.set_temperature(2)
+    # bbq.set_temperature(2)
+    update_bbq()
+
+
+def update_bbq():
+    global bbq
+    RaspGPIO.state_temperature(bbq.set_temperature)
 
 
 def shuffle_data():
@@ -102,6 +108,7 @@ async def get_message(sid, data):
         logger.info("False! data!")
         bbq = update()
         msg = bbq.serialize()
+        logger.error()
         print(msg)
         await send_data(msg)
         # time.sleep(2)

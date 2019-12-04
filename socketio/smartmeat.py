@@ -60,7 +60,6 @@ class Smartmeat:
     def set_temperature(self, value):
         if value >= 1 and value <= 4:
             self.temperature = value
-            RaspGPIO.state_temperature(self.temperature)
         else:
             logger.info("ERROR: Invalid temperature value: {}".format(value))
 
