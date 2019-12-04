@@ -68,7 +68,7 @@ async def connect(sid, environ):
     global bbq
     if not bbq:
         bbq = Smartmeat.instance()
-    logger.info("Connected at {}".format(sid))
+    logger.error("Connected at {}".format(sid))
     await send_data()
 
 
@@ -77,7 +77,7 @@ async def get_message(sid, data):
     global bbq
     # Fill BBQ attributes
     bbq = unserialize(data)
-    logger.info("Message Received from {} containing: {}".format(sid, data))
+    logger.error("Message Received from {} containing: {}".format(sid, data))
     # shuffle new data into attributes
     if SIMULATOR:
         # if simulator, then send data back after shuffling
@@ -92,13 +92,14 @@ async def send_data(threaded=False):
     if not bbq:
         bbq = Smartmeat.instance()
     tz = timezone('Brazil/East')
-    logger.info("Sending Message. Message time: {}".format(datetime.now(tz=tz)))
+    logger.error("Sending Message {}. Message time: {}".format(bbq.serialize(), datetime.now(tz=tz)))
     msg = bbq.serialize()
     if threaded:
         while True:
             await sio.sleep(SLEEP_TIME)
             bbq = shuffle_data()
             msg = bbq.serialize()
+            # logger.error("THREAD: Sending Message {}. Message time: {}".format(bbq.serialize(), datetime.now(tz=tz)))
             await sio.emit("message", msg)
     else:
         await sio.emit("message", msg)
@@ -106,8 +107,8 @@ async def send_data(threaded=False):
 
 @sio.event
 def disconnect(sid):
-    global bbq
-    bbq = None
+    # global bbq
+    # bbq = None
     logger.info('Disconnected {}'.format(sid))
 
 
