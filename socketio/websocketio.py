@@ -96,7 +96,7 @@ async def connect(sid, environ):
     global bbq
     if not bbq:
         bbq = Smartmeat.instance()
-    logger.info("Connected at {}".format(sid))
+    logger.error("Connected at {}".format(sid))
     await send_data()
 
 
@@ -130,14 +130,16 @@ async def send_data(threaded=False):
     global bbq
     if not bbq:
         bbq = Smartmeat.instance()
-    tz = timezone("Brazil/East")
-    logger.info("Sending Message. Message time: {}".format(datetime.now(tz=tz)))
+
+    tz = timezone('Brazil/East')
+    logger.error("Sending Message {}. Message time: {}".format(bbq.serialize(), datetime.now(tz=tz)))
     msg = bbq.serialize()
     if threaded:
         while True:
             await sio.sleep(SLEEP_TIME)
             bbq = shuffle_data()
             msg = bbq.serialize()
+            # logger.error("THREAD: Sending Message {}. Message time: {}".format(bbq.serialize(), datetime.now(tz=tz)))
             await sio.emit("message", msg)
     else:
         await sio.emit("message", msg)
