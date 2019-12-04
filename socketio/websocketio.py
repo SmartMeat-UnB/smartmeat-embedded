@@ -43,11 +43,12 @@ def unserialize(json_str):
 
 def update():
     global bbq
-    #jinit_sticks = RaspGPIO.state_sticks()
+    # init_sticks = RaspGPIO.state_sticks()
     bbq.set_stick("stick1")
     bbq.set_stick("stick2")
     bbq.set_stick("stick3")
     bbq.set_stick("stick4")
+    bbq.set_temperature(2)
 
 
 def shuffle_data():
@@ -73,7 +74,7 @@ def shuffle_data():
     return bbq
 
 
-@sio.on('connect')
+@sio.on("connect")
 async def connect(sid, environ):
     global bbq
     if not bbq:
@@ -103,14 +104,14 @@ async def get_message(sid, data):
         msg = bbq.serialize()
         print(msg)
         await send_data(msg)
-        #time.sleep(2)
+        # time.sleep(2)
 
 
 async def send_data(threaded=False):
     global bbq
     if not bbq:
         bbq = Smartmeat.instance()
-    tz = timezone('Brazil/East')
+    tz = timezone("Brazil/East")
     logger.info("Sending Message. Message time: {}".format(datetime.now(tz=tz)))
     msg = bbq.serialize()
     if threaded:
@@ -130,6 +131,6 @@ def disconnect(sid):
     logger.info("Disconnected {}".format(sid))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sio.start_background_task(send_data, threaded=True)
-    web.run_app(app, host='0.0.0.0', port=8080)
+    web.run_app(app, host="0.0.0.0", port=8080)
