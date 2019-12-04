@@ -50,17 +50,22 @@ def update():
     bbq.set_stick("stick4")
     # bbq.set_temperature(2)
     update_bbq()
+    set_temp_rasp()
 
 
 def update_bbq():
     global bbq
     RaspGPIO.state_temperature(bbq.set_temperature)
 
-
 def set_temp_rasp():
     global bbq
-    return bbq.set_temperature
-
+    try:
+        file_temperature = 'temperature.txt'
+        open_file = open(file_teperature, 'w+')
+    except FileNotFoundError:
+        open_file = open('temperature.txt', 'w+')
+        open_file.write(bbq.set_temperature)
+    file_teperature.close()
 
 def shuffle_data():
     global bbq
@@ -97,9 +102,11 @@ async def connect(sid, environ):
 @sio.on("message")
 async def get_message(sid, data):
     global bbq
+    if not bbq:
+        bbq = Smartmeat.instance()
     # Fill BBQ attributes
     bbq = unserialize(data)
-    logger.info("Message Received from {} containing: {}".format(sid, data))
+    logger.error("Message Received from {} containing: {}".format(sid, data))
     # shuffle new data into attributes
     if SIMULATOR:
         # if simulator, then send data back after shuffling
@@ -113,7 +120,6 @@ async def get_message(sid, data):
         logger.info("False! data!")
         bbq = update()
         msg = bbq.serialize()
-        logger.error()
         print(msg)
         await send_data(msg)
         # time.sleep(2)
