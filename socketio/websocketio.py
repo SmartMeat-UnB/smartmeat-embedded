@@ -59,12 +59,13 @@ def update_bbq():
 
 def set_temp_rasp():
     global bbq
+    logger.error("Temperature{}".format(bbq.temperature))
     try:
         file_temperature = 'temperature.txt'
         open_file = open(file_teperature, 'w+')
     except FileNotFoundError:
         open_file = open('temperature.txt', 'w+')
-        open_file.write(bbq.set_temperature)
+        open_file.write('1')
     file_teperature.close()
 
 def shuffle_data():
