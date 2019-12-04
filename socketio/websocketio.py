@@ -5,18 +5,19 @@ import os
 import time
 import logging
 import sys
+import RPi.GPIO as gpio
 
 from pytz import timezone
 from datetime import datetime
 from aiohttp import web
 from smartmeat import Smartmeat
-
+from raspberry import RaspGPIO
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 SIMULATOR = False
-SLEEP_TIME = 2
+SLEEP_TIME = 1
 
 sio = socketio.AsyncServer(logger=True, async_mode="aiohttp")
 app = web.Application()
@@ -40,16 +41,43 @@ def unserialize(json_str):
     return bbq
 
 
+def update():
+    global bbq
+    # init_sticks = RaspGPIO.state_sticks()
+    bbq.set_stick("stick1")
+    bbq.set_stick("stick2")
+    bbq.set_stick("stick3")
+    bbq.set_stick("stick4")
+    # bbq.set_temperature(2)
+    update_bbq()
+    set_temp_rasp()
+
+
+def update_bbq():
+    global bbq
+    RaspGPIO.state_temperature(bbq.set_temperature)
+
+def set_temp_rasp():
+    global bbq
+    logger.error("Temperature{}".format(bbq.temperature))
+    try:
+        file_temperature = 'temperature.txt'
+        open_file = open(file_teperature, 'w+')
+    except FileNotFoundError:
+        open_file = open('temperature.txt', 'w+')
+        open_file.write('1')
+    file_teperature.close()
+
 def shuffle_data():
     global bbq
     if not bbq:
         bbq = Smartmeat.instance()
 
-    # bbq.set_state(True)
+    bbq.set_state(True)
     bbq.set_temperature(random.randint(1, 4))
 
     active_sticks = bbq.get_active_sticks()
-    inactive_sticks = list(set([1,2,3,4]).symmetric_difference(set(active_sticks)))
+    inactive_sticks = list(set([1, 2, 3, 4]).symmetric_difference(set(active_sticks)))
 
     if active_sticks:
         for _ in active_sticks:
@@ -63,7 +91,7 @@ def shuffle_data():
     return bbq
 
 
-@sio.on('connect')
+@sio.on("connect")
 async def connect(sid, environ):
     global bbq
     if not bbq:
@@ -72,9 +100,11 @@ async def connect(sid, environ):
     await send_data()
 
 
-@sio.on('message')
+@sio.on("message")
 async def get_message(sid, data):
     global bbq
+    if not bbq:
+        bbq = Smartmeat.instance()
     # Fill BBQ attributes
     bbq = unserialize(data)
     logger.error("Message Received from {} containing: {}".format(sid, data))
@@ -83,14 +113,24 @@ async def get_message(sid, data):
         # if simulator, then send data back after shuffling
         logger.info("Simulator True! Shuffling data!")
         bbq = shuffle_data()
-        #time.sleep(2)
-        await send_data()
+        msg = bbq.serialize()
+        # time.sleep(2)
+        await send_data(msg)
+    else:
+        # if bbq, update sticks
+        logger.info("False! data!")
+        bbq = update()
+        msg = bbq.serialize()
+        print(msg)
+        await send_data(msg)
+        # time.sleep(2)
 
 
 async def send_data(threaded=False):
     global bbq
     if not bbq:
         bbq = Smartmeat.instance()
+
     tz = timezone('Brazil/East')
     logger.error("Sending Message {}. Message time: {}".format(bbq.serialize(), datetime.now(tz=tz)))
     msg = bbq.serialize()
@@ -107,11 +147,11 @@ async def send_data(threaded=False):
 
 @sio.event
 def disconnect(sid):
-    # global bbq
-    # bbq = None
-    logger.info('Disconnected {}'.format(sid))
+    global bbq
+    bbq = None
+    logger.info("Disconnected {}".format(sid))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sio.start_background_task(send_data, threaded=True)
-    web.run_app(app, host='0.0.0.0', port=8080)
+    web.run_app(app, host="0.0.0.0", port=8080)

@@ -3,5 +3,5 @@ python-socketio
 qrcode
 pygame
 netifaces
+RPi.GPIO
 pytz 
-
